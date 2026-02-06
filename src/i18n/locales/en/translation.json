@@ -7,6 +7,7 @@
     "cancel": "Cancel"
   },
   "sidebar": {
+    "appName": "Blue Partner",
     "general": "General",
     "advanced": "Advanced",
     "postProcessing": "Post Process",
