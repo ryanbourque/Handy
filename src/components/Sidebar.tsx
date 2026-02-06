@@ -63,7 +63,7 @@ export const SECTIONS_CONFIG = {
     labelKey: "sidebar.about",
     icon: Info,
     component: AboutSettings,
-    enabled: () => true,
+    enabled: () => false,
   },
 } as const satisfies Record<string, SectionConfig>;
 

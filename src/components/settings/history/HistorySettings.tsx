@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AudioPlayer } from "../../ui/AudioPlayer";
 import { Button } from "../../ui/Button";
-import { Copy, Star, Check, Trash2, FolderOpen } from "lucide-react";
+import { Copy, Check, Trash2, FolderOpen } from "lucide-react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { readFile } from "@tauri-apps/plugin-fs";
@@ -74,15 +74,6 @@ export const HistorySettings: React.FC = () => {
       });
     };
   }, [loadHistoryEntries]);
-
-  const toggleSaved = async (id: number) => {
-    try {
-      await commands.toggleHistoryEntrySaved(id);
-      // No need to reload here - the event listener will handle it
-    } catch (error) {
-      console.error("Failed to toggle saved status:", error);
-    }
-  };
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -202,7 +193,6 @@ export const HistorySettings: React.FC = () => {
               <HistoryEntryComponent
                 key={entry.id}
                 entry={entry}
-                onToggleSaved={() => toggleSaved(entry.id)}
                 onCopyText={() => copyToClipboard(entry.transcription_text)}
                 getAudioUrl={getAudioUrl}
                 deleteAudio={deleteAudioEntry}
@@ -217,7 +207,6 @@ export const HistorySettings: React.FC = () => {
 
 interface HistoryEntryProps {
   entry: HistoryEntry;
-  onToggleSaved: () => void;
   onCopyText: () => void;
   getAudioUrl: (fileName: string) => Promise<string | null>;
   deleteAudio: (id: number) => Promise<void>;
@@ -225,13 +214,14 @@ interface HistoryEntryProps {
 
 const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   entry,
-  onToggleSaved,
   onCopyText,
   getAudioUrl,
   deleteAudio,
 }) => {
   const { t, i18n } = useTranslation();
   const [showCopied, setShowCopied] = useState(false);
+  const [isDeleteArmed, setIsDeleteArmed] = useState(false);
+  const deleteArmTimer = useRef<number | null>(null);
 
   const handleLoadAudio = useCallback(
     () => getAudioUrl(entry.file_name),
@@ -245,8 +235,21 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   };
 
   const handleDeleteEntry = async () => {
+    if (!isDeleteArmed) {
+      setIsDeleteArmed(true);
+      if (deleteArmTimer.current) {
+        window.clearTimeout(deleteArmTimer.current);
+      }
+      deleteArmTimer.current = window.setTimeout(() => {
+        setIsDeleteArmed(false);
+        deleteArmTimer.current = null;
+      }, 2500);
+      return;
+    }
+
     try {
       await deleteAudio(entry.id);
+      setIsDeleteArmed(false);
     } catch (error) {
       console.error("Failed to delete entry:", error);
       alert("Failed to delete entry. Please try again.");
@@ -254,6 +257,14 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   };
 
   const formattedDate = formatDateTime(String(entry.timestamp), i18n.language);
+
+  useEffect(() => {
+    return () => {
+      if (deleteArmTimer.current) {
+        window.clearTimeout(deleteArmTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="px-4 py-2 pb-5 flex flex-col gap-3">
@@ -272,27 +283,12 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             )}
           </button>
           <button
-            onClick={onToggleSaved}
-            className={`p-2 rounded  transition-colors cursor-pointer ${
-              entry.saved
-                ? "text-logo-primary hover:text-logo-primary/80"
-                : "text-text/50 hover:text-logo-primary"
-            }`}
-            title={
-              entry.saved
-                ? t("settings.history.unsave")
-                : t("settings.history.save")
-            }
-          >
-            <Star
-              width={16}
-              height={16}
-              fill={entry.saved ? "currentColor" : "none"}
-            />
-          </button>
-          <button
             onClick={handleDeleteEntry}
-            className="text-text/50 hover:text-logo-primary transition-colors cursor-pointer"
+            className={`transition-colors cursor-pointer ${
+              isDeleteArmed
+                ? "text-red-400 hover:text-red-300"
+                : "text-text/50 hover:text-text/70"
+            }`}
             title={t("settings.history.delete")}
           >
             <Trash2 width={16} height={16} />

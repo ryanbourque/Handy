@@ -92,13 +92,6 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
     let (settings_accelerator, quit_accelerator) = (Some("Ctrl+,"), Some("Ctrl+Q"));
 
     // Create common menu items
-    let version_label = if cfg!(debug_assertions) {
-        format!("Handy v{} (Dev)", env!("CARGO_PKG_VERSION"))
-    } else {
-        format!("Handy v{}", env!("CARGO_PKG_VERSION"))
-    };
-    let version_i = MenuItem::with_id(app, "version", &version_label, false, None::<&str>)
-        .expect("failed to create version item");
     let settings_i = MenuItem::with_id(
         app,
         "settings",
@@ -107,14 +100,6 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
         settings_accelerator,
     )
     .expect("failed to create settings item");
-    let check_updates_i = MenuItem::with_id(
-        app,
-        "check_updates",
-        &strings.check_updates,
-        settings.update_checks_enabled,
-        None::<&str>,
-    )
-    .expect("failed to create check updates item");
     let copy_last_transcript_i = MenuItem::with_id(
         app,
         "copy_last_transcript",
@@ -134,14 +119,11 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
             Menu::with_items(
                 app,
                 &[
-                    &version_i,
-                    &separator(),
                     &cancel_i,
                     &separator(),
                     &copy_last_transcript_i,
                     &separator(),
                     &settings_i,
-                    &check_updates_i,
                     &separator(),
                     &quit_i,
                 ],
@@ -151,12 +133,9 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
         TrayIconState::Idle => Menu::with_items(
             app,
             &[
-                &version_i,
-                &separator(),
                 &copy_last_transcript_i,
                 &separator(),
                 &settings_i,
-                &check_updates_i,
                 &separator(),
                 &quit_i,
             ],
@@ -206,7 +185,7 @@ mod tests {
     fn build_entry(transcription: &str, post_processed: Option<&str>) -> HistoryEntry {
         HistoryEntry {
             id: 1,
-            file_name: "handy-1.wav".to_string(),
+            file_name: "bp-1.wav".to_string(),
             timestamp: 0,
             saved: false,
             title: "Recording".to_string(),

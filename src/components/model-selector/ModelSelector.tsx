@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { produce } from "immer";
 import { commands, type ModelInfo } from "@/bindings";
 import { getTranslatedModelName } from "../../lib/utils/modelTranslation";
 import ModelStatusButton from "./ModelStatusButton";
-import ModelDropdown from "./ModelDropdown";
 import DownloadProgressDisplay from "./DownloadProgressDisplay";
 
 interface ModelStateEvent {
@@ -51,15 +50,12 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
   const [modelDownloadProgress, setModelDownloadProgress] = useState<
     Record<string, DownloadProgress>
   >({});
-  const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [downloadStats, setDownloadStats] = useState<
     Record<string, DownloadStats>
   >({});
   const [extractingModels, setExtractingModels] = useState<
     Record<string, true>
   >({});
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadModels();
@@ -227,20 +223,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
       setModelStatus("error");
     });
 
-    // Click outside to close dropdown
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowModelDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
       modelStateUnlisten.then((fn) => fn());
       downloadProgressUnlisten.then((fn) => fn());
       downloadCompleteUnlisten.then((fn) => fn());
@@ -294,7 +277,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
     try {
       setCurrentModelId(modelId); // Set optimistically so loading text shows correct model
       setModelError(null);
-      setShowModelDropdown(false);
       const result = await commands.setActiveModel(modelId);
       if (result.status === "error") {
         const errorMsg = result.error;
@@ -310,23 +292,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
     }
   };
 
-  const handleModelDownload = async (modelId: string) => {
-    try {
-      setModelError(null);
-      const result = await commands.downloadModel(modelId);
-      if (result.status === "error") {
-        const errorMsg = result.error;
-        setModelError(errorMsg);
-        setModelStatus("error");
-        onError?.(errorMsg);
-      }
-    } catch (err) {
-      const errorMsg = `${err}`;
-      setModelError(errorMsg);
-      setModelStatus("error");
-      onError?.(errorMsg);
-    }
-  };
 
   const getCurrentModel = () => {
     return models.find((m) => m.id === currentModelId);
@@ -399,37 +364,16 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
     }
   };
 
-  const handleModelDelete = async (modelId: string) => {
-    const result = await commands.deleteModel(modelId);
-    if (result.status === "ok") {
-      await loadModels();
-      setModelError(null);
-    }
-  };
-
   return (
     <>
-      {/* Model Status and Switcher */}
-      <div className="relative" ref={dropdownRef}>
+      {/* Model Status */}
+      <div className="relative">
         <ModelStatusButton
           status={modelStatus}
           displayText={getModelDisplayText()}
-          isDropdownOpen={showModelDropdown}
-          onClick={() => setShowModelDropdown(!showModelDropdown)}
+          showCaret={false}
+          showText={false}
         />
-
-        {/* Model Dropdown */}
-        {showModelDropdown && (
-          <ModelDropdown
-            models={models}
-            currentModelId={currentModelId}
-            downloadProgress={modelDownloadProgress}
-            onModelSelect={handleModelSelect}
-            onModelDownload={handleModelDownload}
-            onModelDelete={handleModelDelete}
-            onError={onError}
-          />
-        )}
       </div>
 
       {/* Download Progress Bar for Models */}

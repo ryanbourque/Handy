@@ -8,5 +8,9 @@
     }
   },
   "push_to_talk": true,
-  "selected_language": "auto"
+  "selected_language": "auto",
+  "history_limit": 100,
+  "recording_retention_period": "never",
+  "model_unload_timeout": "never",
+  "experimental_enabled": false
 }

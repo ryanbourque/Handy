@@ -12,16 +12,20 @@ type ModelStatus =
 interface ModelStatusButtonProps {
   status: ModelStatus;
   displayText: string;
-  isDropdownOpen: boolean;
-  onClick: () => void;
+  isDropdownOpen?: boolean;
+  onClick?: () => void;
+  showCaret?: boolean;
+  showText?: boolean;
   className?: string;
 }
 
 const ModelStatusButton: React.FC<ModelStatusButtonProps> = ({
   status,
   displayText,
-  isDropdownOpen,
+  isDropdownOpen = false,
   onClick,
+  showCaret = true,
+  showText = true,
   className = "",
 }) => {
   const getStatusColor = (status: ModelStatus): string => {
@@ -45,28 +49,49 @@ const ModelStatusButton: React.FC<ModelStatusButtonProps> = ({
     }
   };
 
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2 hover:text-text/80 transition-colors ${className}`}
-      title={`Model status: ${displayText}`}
-    >
+  const containerClass = `flex items-center gap-2 transition-colors ${
+    onClick ? "hover:text-text/80" : "cursor-default"
+  } ${className}`;
+
+  const content = (
+    <>
       <div className={`w-2 h-2 rounded-full ${getStatusColor(status)}`} />
-      <span className="max-w-28 truncate">{displayText}</span>
-      <svg
-        className={`w-3 h-3 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
+      {showText && <span className="max-w-28 truncate">{displayText}</span>}
+      {showCaret && (
+        <svg
+          className={`w-3 h-3 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      )}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={containerClass}
+        title={`Model status: ${displayText}`}
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={containerClass} title={`Model status: ${displayText}`}>
+      {content}
+    </div>
   );
 };
 
