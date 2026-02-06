@@ -86,13 +86,27 @@
       },
       "InventoryItem": {
         "type": "object",
-        "required": ["id", "name", "category", "decision", "rationale", "dependencies"],
+        "required": [
+          "id",
+          "name",
+          "category",
+          "decision",
+          "rationale",
+          "dependencies"
+        ],
         "properties": {
           "id": { "type": "string" },
           "name": { "type": "string" },
           "category": {
             "type": "string",
-            "enum": ["route", "component", "menu", "settings", "overlay", "permission"]
+            "enum": [
+              "route",
+              "component",
+              "menu",
+              "settings",
+              "overlay",
+              "permission"
+            ]
           },
           "location": { "type": "string" },
           "decision": {

@@ -15,7 +15,7 @@
 - Q: When dependencies are unclear, which source should be preferred? → A: Prefer the command/event map when available.
 - Q: What should be the primary source of truth for inventory items? → A: Use current code/UI as source of truth; documentation only for cross-checking.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Review feature inventory for safe removal (Priority: P1)
 
@@ -77,7 +77,7 @@ As a system integrator, I want a JSON capability object draft that mirrors the i
 - When dependency information is unclear, prefer command/event mappings as the source of truth.
 - Current code/UI is the primary source of truth; documentation is used only for cross-checking.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -94,7 +94,7 @@ As a system integrator, I want a JSON capability object draft that mirrors the i
 - Access to the current app UI, menus, and settings panels.
 - Access to existing documentation or source references for commands, events, and settings keys.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **Inventory Item**: A UI surface or settings panel with dependencies, decision, and rationale.
 - **Backend Dependency**: A command, event, or settings key referenced by an inventory item.
@@ -102,7 +102,7 @@ As a system integrator, I want a JSON capability object draft that mirrors the i
 - **Guard Point**: A single control that disables a defined area with mapped items.
 - **Capability Object**: The JSON representation of the inventory and guard points.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

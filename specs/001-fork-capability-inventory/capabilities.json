@@ -958,10 +958,7 @@
       "id": "guard.navigation",
       "name": "Navigation Guard",
       "description": "Disable main navigation shell",
-      "covers": [
-        "route.app_shell",
-        "component.sidebar"
-      ]
+      "covers": ["route.app_shell", "component.sidebar"]
     },
     {
       "id": "guard.overlay",
@@ -977,10 +974,7 @@
       "id": "guard.tray",
       "name": "Tray Guard",
       "description": "Disable tray menu items",
-      "covers": [
-        "menu.tray_menu",
-        "menu.tray_labels"
-      ]
+      "covers": ["menu.tray_menu", "menu.tray_labels"]
     },
     {
       "id": "guard.permissions",

@@ -21,7 +21,7 @@ Produce a markdown inventory of all user-visible UI surfaces (settings, onboardi
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - No enforceable principles found in [.specify/memory/constitution.md](.specify/memory/constitution.md); file contains placeholders only. Gate passes by default.
 
