@@ -38,7 +38,6 @@ export const AdvancedSettings: React.FC = () => {
         <CustomWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
-
     </div>
   );
 };

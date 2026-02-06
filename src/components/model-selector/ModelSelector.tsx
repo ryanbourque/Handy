@@ -292,7 +292,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
     }
   };
 
-
   const getCurrentModel = () => {
     return models.find((m) => m.id === currentModelId);
   };
